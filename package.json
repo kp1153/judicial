@@ -2,11 +2,14 @@
   "name": "judicial",
   "version": "0.1.0",
   "private": true,
+  "main": "electron/main.js",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "electron": "electron .",
+    "electron:build": "electron-builder --win --x64"
   },
   "dependencies": {
     "@libsql/client": "^0.17.2",
@@ -23,8 +26,17 @@
     "babel-plugin-react-compiler": "1.0.0",
     "dotenv": "^17.4.0",
     "drizzle-kit": "^0.31.10",
+    "electron": "^41.1.1",
+    "electron-builder": "^26.8.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.2",
     "tailwindcss": "^4"
+  },
+  "build": {
+    "appId": "com.nishant.judicial",
+    "productName": "Legal Pro",
+    "directories": { "output": "dist" },
+    "win": { "icon": "public/icon.ico", "target": "nsis" },
+    "nsis": { "oneClick": false, "perMachine": false }
   }
 }

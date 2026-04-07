@@ -58,10 +58,19 @@ export async function GET(request) {
     }
   }
 
+  const userRow = await db
+    .select()
+    .from(users)
+    .where(eq(users.email, googleUser.email))
+    .limit(1);
+
+  const userId = userRow[0]?.id;
+
   await createSessionCookie({
     email: googleUser.email,
     name: googleUser.name,
     picture: googleUser.picture,
+    userId,
   });
 
   return Response.redirect(new URL("/dashboard", process.env.NEXT_PUBLIC_BASE_URL));

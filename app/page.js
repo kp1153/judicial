@@ -1,6 +1,6 @@
 "use client";
 
-const LEGAL_PWA_URL = "https://judicial-phi.vercel.app";
+const LEGAL_PWA_URL = "https://judicial-phi.vercel.app/login";
 const WINDOWS_EXE_URL = "#";
 
 const painPoints = [

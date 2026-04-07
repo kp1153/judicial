@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { cases, clients, hearings, fees } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 import Link from "next/link";
+import BottomNav from "@/components/BottomNav";
 import LogoutButton from "@/components/LogoutButton";
 
 export default async function Dashboard() {
@@ -124,6 +125,7 @@ export default async function Dashboard() {
           </div>
         </div>
       </div>
+          <BottomNav />
     </main>
   );
 }

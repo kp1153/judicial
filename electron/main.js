@@ -14,11 +14,6 @@ function createWindow() {
   });
 
   win.loadURL("https://judicial-phi.vercel.app");
-
-  win.webContents.setWindowOpenHandler(({ url }) => {
-    require("electron").shell.openExternal(url);
-    return { action: "deny" };
-  });
 }
 
 app.whenReady().then(() => {

@@ -1,4 +1,5 @@
 "use client";
+import BottomNav from "@/components/BottomNav";
 import { useState, useEffect } from "react";
 
 const S = `
@@ -87,6 +88,7 @@ export default function SettingsPage() {
           </button>
         </div>
       </div>
+          <div className="pb-16 md:pb-0"><BottomNav /></div>
     </main>
   );
 }

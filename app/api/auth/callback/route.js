@@ -5,6 +5,8 @@ import { eq } from "drizzle-orm";
 import { createSessionCookie } from "@/lib/session";
 import { cookies } from "next/headers";
 
+const DEVELOPER_EMAIL = "prasad.kamta@gmail.com";
+
 export async function GET(request) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
@@ -54,6 +56,7 @@ export async function GET(request) {
         name: googleUser.name,
         status: "trial",
         expiryDate: expiry.toISOString(),
+        reminderSent: 0,
       });
     }
   }
@@ -64,7 +67,18 @@ export async function GET(request) {
     .where(eq(users.email, googleUser.email))
     .limit(1);
 
-  const userId = userRow[0]?.id;
+  const u = userRow[0];
+  const userId = u?.id;
+
+  if (u && u.email !== DEVELOPER_EMAIL) {
+    const now = new Date();
+    const expiry = u.expiryDate ? new Date(u.expiryDate) : null;
+
+    if (expiry && now > expiry) {
+      await db.update(users).set({ status: "expired" }).where(eq(users.email, u.email));
+      return Response.redirect(new URL("/expired", process.env.NEXT_PUBLIC_BASE_URL));
+    }
+  }
 
   await createSessionCookie({
     email: googleUser.email,

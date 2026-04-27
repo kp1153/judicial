@@ -1,43 +1,42 @@
-import { getSession } from "@/lib/session";
+"use client";
+import { useEffect, useState } from "react";
 
-export const dynamic = "force-dynamic";
+export default function ExpiredPage() {
+  const [email, setEmail] = useState("");
 
-export default async function ExpiredPage() {
-  const session = await getSession();
-  const email = session?.email || "";
-  const hubUrl = `https://nishantsoftwares.in/payment?software=legal&email=${encodeURIComponent(email)}`;
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.user?.email) setEmail(data.user.email);
+      })
+      .catch(() => {});
+  }, []);
+
+  const paymentUrl = `https://nishantsoftwares.in/payment?software=legal${email ? "&email=" + encodeURIComponent(email) : ""}`;
 
   return (
-    <main className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
-      <div className="max-w-md w-full text-center">
-        <div className="bg-gray-900 border border-gray-800 rounded-3xl shadow-lg p-8">
-          <div className="text-6xl mb-4">⏰</div>
-          <h1 className="text-2xl font-bold text-white mb-2">ट्रायल समाप्त</h1>
-          <p className="text-gray-400 text-sm mb-6">
-            आपका ७ दिन का निःशुल्क ट्रायल समाप्त हो गया है। Judicial Pro आगे चलाने के लिए कृपया लाइसेंस खरीदें।
+    <main style={{ minHeight: "100vh", background: "#0a0f1e", display: "flex", alignItems: "center", justifyContent: "center", padding: "16px" }}>
+      <div style={{ background: "#111827", border: "1px solid #1f2937", borderRadius: "24px", padding: "40px 32px", width: "100%", maxWidth: "400px", textAlign: "center" }}>
+        <div style={{ fontSize: "52px", marginBottom: "12px" }}>⏰</div>
+        <h1 style={{ fontSize: "24px", fontWeight: "800", color: "#fff", marginBottom: "8px" }}>ट्रायल समाप्त</h1>
+        <p style={{ color: "#9ca3af", fontSize: "15px", marginBottom: "24px" }}>
+          आपका ७ दिन का निःशुल्क ट्रायल समाप्त हो गया है। Judicial Pro आगे चलाने के लिए कृपया लाइसेंस खरीदें।
+        </p>
+        <div style={{ background: "#1f2937", borderRadius: "16px", padding: "20px", marginBottom: "24px" }}>
+          <p style={{ color: "#9ca3af", fontSize: "13px", margin: "0 0 4px" }}>Judicial Pro License</p>
+          <p style={{ fontSize: "36px", fontWeight: "800", color: "#f59e0b", margin: "0 0 4px" }}>
+            ₹4,999 <span style={{ fontSize: "14px", fontWeight: "400", color: "#6b7280" }}>/साल</span>
           </p>
-          <div className="bg-gray-800 rounded-2xl p-4 mb-6 text-left">
-            <p className="text-sm font-semibold text-amber-400 mb-1">Judicial Pro लाइसेंस</p>
-            <p className="text-2xl font-extrabold text-white mb-1">
-              ₹4,999 <span className="text-sm font-normal text-gray-400">/ साल</span>
-            </p>
-            <p className="text-xs text-gray-500">नवीनीकरण: ₹2,500 / साल</p>
-          </div>
-          <a
-            href={hubUrl}
-            className="block w-full bg-amber-500 hover:bg-amber-400 text-black font-bold py-3 rounded-2xl transition mb-3"
-          >
-            अभी खरीदें
-          </a>
-          <a
-            href="https://wa.me/919996865069"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-2xl transition"
-          >
-            WhatsApp सहायता
-          </a>
+          <p style={{ color: "#6b7280", fontSize: "12px", margin: 0 }}>नवीनीकरण: ₹2,500/साल</p>
         </div>
+        <a href={paymentUrl} style={{ display: "block", width: "100%", padding: "14px", background: "#f59e0b", color: "#000", fontSize: "16px", fontWeight: "700", borderRadius: "14px", textDecoration: "none", marginBottom: "12px" }}>
+          अभी खरीदें — ₹4,999
+        </a>
+        <a href="https://wa.me/919996865069" target="_blank" rel="noopener noreferrer" style={{ display: "block", width: "100%", padding: "14px", background: "#25d366", color: "#fff", fontSize: "16px", fontWeight: "700", borderRadius: "14px", textDecoration: "none", marginBottom: "20px" }}>
+          WhatsApp सहायता
+        </a>
+        <a href="/login" style={{ color: "#6b7280", fontSize: "13px" }}>Back to Login</a>
       </div>
     </main>
   );

@@ -9,34 +9,41 @@ const raw = createClient({
 });
 
 export async function POST(request) {
-  const authHeader = request.headers.get("Authorization");
-  const body = await request.json();
-  const secret = process.env.HUB_SECRET;
+  try {
+    const authHeader = request.headers.get("Authorization");
+    const body = await request.json();
+    const secret = process.env.HUB_SECRET;
 
-  if (authHeader !== `Bearer ${secret}` && body.secret !== secret) {
-    return Response.json({ success: false, error: "unauthorized" }, { status: 401 });
-  }
+    if (authHeader !== `Bearer ${secret}` && body.secret !== secret) {
+      return Response.json({ success: false, error: "unauthorized" }, { status: 401 });
+    }
 
-  const { email, name } = body;
-  if (!email) return Response.json({ success: false, error: "email required" }, { status: 400 });
+    const { email, months } = body;
+    if (!email) return Response.json({ success: false, error: "email required" }, { status: 400 });
 
-  const expiry = new Date();
-  expiry.setFullYear(expiry.getFullYear() + 1);
+    const expiry = new Date();
+    expiry.setMonth(expiry.getMonth() + (months || 12));
 
-  const existing = await db.select().from(users).where(eq(users.email, email));
+    const existing = await db.select().from(users).where(eq(users.email, email));
 
-  if (existing.length === 0) {
-    await raw.execute({
-      sql: "INSERT INTO pre_activations (email) VALUES (?) ON CONFLICT DO NOTHING",
-      args: [email],
-    });
-  } else {
+    if (existing.length === 0) {
+      await raw.execute({
+        sql: "INSERT INTO pre_activations (email) VALUES (?) ON CONFLICT(email) DO NOTHING",
+        args: [email],
+      });
+      return Response.json({ success: true, message: "pre-activated", email });
+    }
+
     await db.update(users).set({
       status: "active",
       expiryDate: expiry.toISOString(),
       reminderSent: 0,
     }).where(eq(users.email, email));
-  }
 
-  return Response.json({ success: true, email, expiryDate: expiry.toISOString() });
+    return Response.json({ success: true, message: "activated", email, expiryDate: expiry.toISOString() });
+
+  } catch (e) {
+    console.error("Activate error:", e);
+    return Response.json({ success: false, error: e.message }, { status: 500 });
+  }
 }

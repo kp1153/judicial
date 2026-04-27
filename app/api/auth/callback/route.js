@@ -1,4 +1,4 @@
-import { google } from "@/lib/auth";
+import { googleClient as google } from "@/lib/auth";
 import { createSession } from "@/lib/session";
 import { db } from "@/lib/db";
 import { users } from "@/lib/schema";
